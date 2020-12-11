@@ -41,9 +41,10 @@ module RailsAdmin
             end
 
             def update_list(model_list)
+              total_count = model_list.as_json.size
               model_list.each do |key, value|
                 model = @abstract_model.model.find(value['id'].to_s)
-                model.send("#{@position_field}=".to_sym, (key.to_i + 1))
+                model.send("#{@position_field}=".to_sym, (total_count - key.to_i))
                 model.save!(validate: @enable_callback)
               end
             end
@@ -85,7 +86,7 @@ module RailsAdmin
               end
 
               if @nestable_conf.list?
-                @tree_nodes = query.order("#{@options[:position_field]} ASC")
+                @tree_nodes = query.order("#{@options[:position_field]} DESC")
               end
 
               render action: @action.template_name
